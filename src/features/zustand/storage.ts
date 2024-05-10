@@ -1,10 +1,10 @@
 import { create } from 'zustand'
 
 interface storage{
-    redirectToSignIn:boolean
-    setRedirectToSignIn: (data:boolean)=>void
+    profile:{}
+    setProfile: (data:{})=>void
 }
 export const useStorage = create<storage>((set)=>({
-    redirectToSignIn:false,
-    setRedirectToSignIn: (data:boolean) =>set((state)=>({redirectToSignIn:state.redirectToSignIn=data}))
+    profile:{},
+    setProfile: (data:{}) =>set((state)=>({profile:state.profile=data}))
 }))

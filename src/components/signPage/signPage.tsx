@@ -1,5 +1,4 @@
 import react, { useEffect, useState } from "react";
-import "./signPage.css";
 import "react-toastify/dist/ReactToastify.css";
 import SignIn from "./childComponents/signIn";
 import SignUp from "./childComponents/signUp";
@@ -9,7 +8,8 @@ import { setAccessToken } from "../../features/auth/authSlice";
 import { useDispatch } from "react-redux";
 import { ToastContainer, toast, Slide } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-function SignPage() {
+import { useSelector } from "react-redux";
+const SignPage = () => {
   const constants = new Constraints();
   const navigate = useNavigate();
   const [currentPageStatue, setCurrentPageStatue] = useState(1);
@@ -18,7 +18,13 @@ function SignPage() {
     { status: 200, message: "Access to Sign page" },
   ]);
   const dispatch = useDispatch();
-  async function SignInAPI(username: string, password: string) {
+  const accessToken = useSelector((state: any) => state.accessToken);
+  useEffect(() => {
+    if (accessToken !== null) {
+      navigate("/");
+    }
+  }, [accessToken]);
+  const SignInAPI = async (username: string, password: string) => {
     const result = await axios.post(`${constants.api_server}/api/user/login`, {
       username: username,
       password: password,
@@ -40,28 +46,29 @@ function SignPage() {
     }
     setCheckUsingAPI(!checkUsingAPI);
     return data;
-  }
-  async function SignUpAPI(
+  };
+  const SignUpAPI = async (
     fullname: string,
     username: string,
     password: string,
     email: string,
     pNumber: string,
-    avatarFile: any
-  ) {
-    const result = await axios.post(
-      `${constants.api_server}/api/user/register`,
+    avatar: any
+  ) => {
+    const form = new FormData()
+    form.append("fullname",fullname)
+    form.append("username",username)
+    form.append("password",password)
+    form.append("email",email)
+    form.append("pNumber",pNumber)
+    form.append("avatar",avatar)
+    const result = await axios(
       {
-        fullname: fullname,
-        username: username,
-        password: password,
-        email: email,
-        pNumber: pNumber,
-        avatarFile: avatarFile,
-      },
-      {
+        method: "post",
+        url: `${constants.api_server}/api/user/register`,
+        data: form,
         headers: {
-          "Content-Type": "multipart/form-data",
+            "Content-Type": "multipart/form-data",
         },
       }
     );
@@ -82,7 +89,7 @@ function SignPage() {
     setMessages(messages);
     setCheckUsingAPI(!checkUsingAPI);
     return data;
-  }
+  };
   useEffect(() => {
     if (
       messages.find((e) => (e = { status: 1, message: "string" })) !== undefined
@@ -125,13 +132,13 @@ function SignPage() {
     { name: "Sign up", page: 2 },
   ];
 
-  function classNames(...classes: any) {
+  const classNames = (...classes: any) => {
     return classes.filter(Boolean).join(" ");
-  }
+  };
   return (
     <>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="flex h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+        <div className="mt-1 sm:mx-auto sm:w-full sm:max-w-sm">
           <div className="hidden sm:ml-6 sm:block">
             <div className="flex space-x-4">
               {navigation.map((item) => (
@@ -142,8 +149,8 @@ function SignPage() {
                   }}
                   className={classNames(
                     item.page === currentPageStatue
-                      ? "bg-indigo-900 text-white"
-                      : "text-gray-900 hover:bg-indigo-700 hover:text-white",
+                      ? "bg-emerald-900 text-gray-50"
+                      : "text-gray-900 bg-emerald-600 hover:bg-emerald-800 hover:text-gray-50",
                     "rounded-md px-3 py-2 text-sm font-medium"
                   )}
                   aria-current={
@@ -165,5 +172,5 @@ function SignPage() {
       <ToastContainer />
     </>
   );
-}
+};
 export default SignPage;

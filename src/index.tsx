@@ -2,34 +2,36 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import MainPage from "./components/mainPage/mainPage";
 import SignPage from "./components/signPage/signPage";
+import PersonalProfilePage from "./components/profilePage/personalProfilePage";
 import reportWebVitals from "./reportWebVitals";
-import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
-import authReducer from "./features/auth/authSlice";
+import { PersistGate } from "redux-persist/integration/react";
+import store, { persistor } from "./store";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <MainPage/>,
+    element: <MainPage />,
   },
   {
     path: "/Sign",
-    element: <SignPage/>,
+    element: <SignPage />,
+  },
+  {
+    path: "/Profile",
+    element: <PersonalProfilePage />,
   }
 ]);
-const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    // Other reducers go here
-  },
-});
+
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <Provider store={store}>
-    <RouterProvider router={router} />
+    <PersistGate loading={null} persistor={persistor}>
+      <RouterProvider router={router} />
+    </PersistGate>
   </Provider>
 );
 
